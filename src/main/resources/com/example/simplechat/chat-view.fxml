@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="ap_main" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.simplechat.ChatController">
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+   <children>
+      <Button fx:id="button_sendMessage" alignment="CENTER" layoutX="543.0" layoutY="361.0" mnemonicParsing="false" onAction="#onSendButtonClick" text="Send" />
+      <TextField fx:id="textField_message" alignment="TOP_LEFT" layoutX="14.0" layoutY="361.0" onAction="#onMessageTextFieldAction" prefHeight="25.0" prefWidth="520.0" />
+      <ScrollPane fx:id="scrollPane_messages" layoutX="14.0" layoutY="14.0" prefHeight="336.0" prefWidth="440.0">
+         <content>
+            <VBox fx:id="vBox_messages" prefHeight="334.0" prefWidth="438.0" />
+         </content>
+      </ScrollPane>
+      <ScrollPane fx:id="scrollPane_userList" layoutX="465.0" layoutY="14.0" prefHeight="336.0" prefWidth="120.0">
+         <content>
+            <VBox fx:id="vBox_userList" prefHeight="334.0" prefWidth="118.0" />
+         </content>
+      </ScrollPane>
+   </children>
+</AnchorPane>
