@@ -97,6 +97,8 @@ public class ChatController implements Initializable {
 
     public void receiveMessage(String receivedMessage) {
         HBox messageContainer = createNewHBoxContainer(receivedMessage);
+        messageContainer.getStyleClass().add("chat-text");
+        messageContainer.getStyleClass().add("chat-message");
         Platform.runLater(() -> vBox_messages.getChildren().add(messageContainer));
     }
 
@@ -104,6 +106,8 @@ public class ChatController implements Initializable {
         Platform.runLater(() -> vBox_userList.getChildren().clear());
         for (String user : listOfUsernames) {
             HBox usernameContainer = createNewHBoxContainer(user);
+            usernameContainer.getStyleClass().add("chat-text");
+            usernameContainer.getStyleClass().add("chat-userlist-entry");
             Platform.runLater(() -> vBox_userList.getChildren().add(usernameContainer));
         }
     }

@@ -1,0 +1,24 @@
+.root {
+    -fx-background-color: #555555;
+}
+
+.label-logo {
+    -fx-text-fill: #CCCCCC;
+}
+
+.text-field {
+    -fx-background-color: #333333;
+    -fx-text-fill: #CCCCCC;
+}
+
+.label-start {
+    -fx-text-fill: #CCCCCC;
+}
+
+.vBox-chat {
+    -fx-background-color: #333333;
+}
+
+.chat-text > TextFlow > Text {
+    -fx-fill: #DDDDDD;
+}

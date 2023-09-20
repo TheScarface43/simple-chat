@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -10,15 +11,19 @@
    </padding>
    <children>
       <Button fx:id="button_sendMessage" alignment="CENTER" layoutX="543.0" layoutY="361.0" mnemonicParsing="false" onAction="#onSendButtonClick" text="Send" />
-      <TextField fx:id="textField_message" alignment="TOP_LEFT" layoutX="14.0" layoutY="361.0" onAction="#onMessageTextFieldAction" prefHeight="25.0" prefWidth="520.0" />
+      <TextField fx:id="textField_message" alignment="TOP_LEFT" layoutX="14.0" layoutY="361.0" onAction="#onMessageTextFieldAction" prefHeight="25.0" prefWidth="520.0">
+         <styleClass>
+            <String fx:value="text-field" />
+            <String fx:value="text-field-chat" />
+         </styleClass></TextField>
       <ScrollPane fx:id="scrollPane_messages" layoutX="14.0" layoutY="14.0" prefHeight="336.0" prefWidth="440.0">
          <content>
-            <VBox fx:id="vBox_messages" prefHeight="334.0" prefWidth="438.0" />
+            <VBox fx:id="vBox_messages" prefHeight="334.0" prefWidth="438.0" styleClass="vBox-chat" />
          </content>
       </ScrollPane>
-      <ScrollPane fx:id="scrollPane_userList" layoutX="465.0" layoutY="14.0" prefHeight="336.0" prefWidth="120.0">
+      <ScrollPane fx:id="scrollPane_userList" layoutX="465.0" layoutY="14.0" prefHeight="336.0" prefWidth="120.0" styleClass="pane-chat">
          <content>
-            <VBox fx:id="vBox_userList" prefHeight="334.0" prefWidth="118.0" />
+            <VBox fx:id="vBox_userList" prefHeight="334.0" prefWidth="118.0" styleClass="vBox-chat" />
          </content>
       </ScrollPane>
    </children>

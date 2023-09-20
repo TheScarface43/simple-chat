@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -9,12 +10,24 @@
    <children>
       <Pane layoutX="15.0" layoutY="73.0" prefHeight="185.0" prefWidth="240.0" style="-fx-border-width: 2; -fx-border-style: solid; -fx-border-radius: 10; -fx-border-color: grey;">
          <children>
-            <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="12.0" layoutY="53.0" text="Nickname:" />
-            <TextField fx:id="textField_nickname" layoutX="77.0" layoutY="49.0" onAction="#onHostButtonClick" prefHeight="25.0" prefWidth="149.0" />
-            <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="11.0" layoutY="85.0" text="IP address:" />
-            <TextField fx:id="textField_ipAddress" layoutX="77.0" layoutY="81.0" onAction="#onJoinButtonClick" prefHeight="25.0" prefWidth="149.0" />
-            <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="43.0" layoutY="117.0" text="Port:" />
-            <TextField fx:id="textField_port" layoutX="77.0" layoutY="113.0" onAction="#onJoinButtonClick" prefHeight="25.0" prefWidth="50.0" promptText="7063" />
+            <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="12.0" layoutY="53.0" styleClass="label-start" text="Nickname:" />
+            <TextField fx:id="textField_nickname" layoutX="77.0" layoutY="49.0" onAction="#onHostButtonClick" prefHeight="25.0" prefWidth="149.0">
+               <styleClass>
+                  <String fx:value="text-field" />
+                  <String fx:value="text-field-start" />
+               </styleClass></TextField>
+            <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="11.0" layoutY="85.0" styleClass="label-start" text="IP address:" />
+            <TextField fx:id="textField_ipAddress" layoutX="77.0" layoutY="81.0" onAction="#onJoinButtonClick" prefHeight="25.0" prefWidth="149.0">
+               <styleClass>
+                  <String fx:value="text-field" />
+                  <String fx:value="text-field-start" />
+               </styleClass></TextField>
+            <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="43.0" layoutY="117.0" styleClass="label-start" text="Port:" />
+            <TextField fx:id="textField_port" layoutX="77.0" layoutY="113.0" onAction="#onJoinButtonClick" prefHeight="25.0" prefWidth="50.0" promptText="7063">
+               <styleClass>
+                  <String fx:value="text-field" />
+                  <String fx:value="text-field-start" />
+               </styleClass></TextField>
             <Button fx:id="button_join" layoutX="191.0" layoutY="146.0" mnemonicParsing="false" onAction="#onJoinButtonClick" text="Join" />
             <Button fx:id="button_host" layoutX="19.0" layoutY="146.0" mnemonicParsing="false" onAction="#onHostButtonClick" text="Host" />
             <Label fx:id="label_warning" alignment="CENTER" contentDisplay="CENTER" layoutX="1.0" layoutY="6.0" prefHeight="34.0" prefWidth="238.0" text="Warning" textAlignment="CENTER" textFill="RED" visible="false" wrapText="true" />
@@ -22,7 +35,7 @@
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding></Pane>
-      <Label layoutX="35.0" layoutY="14.0" text="Simple Chat">
+      <Label layoutX="35.0" layoutY="14.0" styleClass="label-logo" text="Simple Chat">
          <font>
             <Font name="Forte" size="38.0" />
          </font>
