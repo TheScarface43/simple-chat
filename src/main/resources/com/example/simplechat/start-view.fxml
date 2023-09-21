@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="270.0" prefWidth="270.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.simplechat.StartController">
+<AnchorPane prefHeight="270.0" prefWidth="270.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.simplechat.StartController">
    <children>
       <Pane layoutX="15.0" layoutY="73.0" prefHeight="185.0" prefWidth="240.0" style="-fx-border-width: 2; -fx-border-style: solid; -fx-border-radius: 10; -fx-border-color: grey;">
          <children>

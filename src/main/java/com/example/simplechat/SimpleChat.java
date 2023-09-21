@@ -19,8 +19,6 @@ public class SimpleChat extends Application {
         scene = new Scene(loadFXML("start-view"));
         stage.setTitle("Simple Chat");
         stage.setScene(scene);
-        String cssPath = SimpleChat.class.getResource("style.css").toExternalForm();
-        scene.getStylesheets().add(cssPath);
         stage.show();
     }
 
