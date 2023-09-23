@@ -25,8 +25,21 @@
 
 .vBox-chat {
     -fx-background-color: #333333;
+    fx-padding: 4 0 4 0;
 }
 
-.chat-text > TextFlow > Text {
+.pane-chat {
+    -fx-background-color: transparent;
+}
+
+.text-chat {
+    -fx-padding: 1 5 1 5;
+}
+
+.text-chat > TextFlow > Text {
     -fx-fill: #DDDDDD;
+}
+
+.userlist-entry-chat:hover {
+    -fx-background-color: #444444;
 }
