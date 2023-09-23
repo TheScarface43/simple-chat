@@ -15,17 +15,17 @@ public class Client implements Runnable {
     private String ip;
     private int port;
 
-    public Client(ChatController chatController, String nickname, String ip, int port) {
+    public Client(ChatController chatController, String nickname, String ip, int port, Socket socket) {
         this.chatController = chatController;
         this.nickname = nickname;
         this.ip = ip;
         this.port = port;
+        this.client = socket;
     }
 
     @Override
     public void run() {
         try {
-            client = new Socket(ip, port);
             out = new ObjectOutputStream(client.getOutputStream());
             in = new ObjectInputStream(client.getInputStream());
             isRunning = true;

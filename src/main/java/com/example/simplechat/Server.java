@@ -1,7 +1,5 @@
 package com.example.simplechat;
 
-import javafx.application.Platform;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -9,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import static com.example.simplechat.SimpleChat.stage;
 
 public class Server implements Runnable{
 
