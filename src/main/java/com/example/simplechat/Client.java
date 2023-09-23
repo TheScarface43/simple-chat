@@ -41,8 +41,8 @@ public class Client implements Runnable {
                         chatController.receiveMessage(inMessage);
                         break;
                     case USERLIST_DATA:
-                        ArrayList<String> listOfUsernames = (ArrayList<String>) in.readObject();
-                        chatController.updateUserList(listOfUsernames);
+                        ArrayList<User> listOfUsers = (ArrayList<User>) in.readObject();
+                        chatController.updateUserList(listOfUsers);
                         break;
                 }
             }

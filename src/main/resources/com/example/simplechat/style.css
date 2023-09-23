@@ -43,3 +43,8 @@
 .userlist-entry-chat:hover {
     -fx-background-color: #444444;
 }
+
+.userlist-entry-chat-host > TextFlow > Text {
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+}

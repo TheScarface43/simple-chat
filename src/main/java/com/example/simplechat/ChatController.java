@@ -1,8 +1,6 @@
 package com.example.simplechat;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,6 +18,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import static com.example.simplechat.RoleType.HOST;
 import static com.example.simplechat.SimpleChat.stage;
 
 public class ChatController implements Initializable {
@@ -97,12 +96,15 @@ public class ChatController implements Initializable {
         Platform.runLater(() -> vBox_messages.getChildren().add(messageContainer));
     }
 
-    public void updateUserList(ArrayList<String> listOfUsernames) {
+    public void updateUserList(ArrayList<User> listOfUsers) {
         Platform.runLater(() -> vBox_userList.getChildren().clear());
-        for (String user : listOfUsernames) {
-            HBox usernameContainer = createNewHBoxContainer(user);
+        for (User user : listOfUsers) {
+            HBox usernameContainer = createNewHBoxContainer(user.nickname());
             usernameContainer.getStyleClass().add("text-chat");
             usernameContainer.getStyleClass().add("userlist-entry-chat");
+            if(user.role().equals(HOST)) {
+                usernameContainer.getStyleClass().add("userlist-entry-chat-host");
+            }
             Platform.runLater(() -> vBox_userList.getChildren().add(usernameContainer));
         }
     }

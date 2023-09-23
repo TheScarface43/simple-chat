@@ -8,12 +8,16 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.example.simplechat.RoleType.HOST;
+import static com.example.simplechat.RoleType.REGULAR;
+
 public class Server implements Runnable{
 
     private ArrayList<ConnectionHandler> connections;
     private ServerSocket serverSocket;
     private ExecutorService pool;
     private static Boolean running;
+    private static Boolean firstConnection = true;
     private static final int MESSAGE_CHAR_LIMIT = 5000;
 
     public Server(ServerSocket serverSocket) {
@@ -29,7 +33,13 @@ public class Server implements Runnable{
             System.out.println("Waiting for connections...");
             while(running) {
                 Socket client = serverSocket.accept();
-                ConnectionHandler connectionHandler = new ConnectionHandler(client);
+                ConnectionHandler connectionHandler;
+                if(firstConnection) {
+                    connectionHandler = new ConnectionHandler(client, HOST);
+                    firstConnection = false;
+                } else {
+                    connectionHandler = new ConnectionHandler(client);
+                }
                 connections.add(connectionHandler);
                 pool.execute(connectionHandler);
                 System.out.println("Connection from " + client.getRemoteSocketAddress().toString());
@@ -77,21 +87,22 @@ public class Server implements Runnable{
         }
     }
 
-    public ArrayList<String> getListOfUsernames() {
-        ArrayList<String> listOfUsernames = new ArrayList<>();
+    public ArrayList<User> getListOfUsers() {
+        ArrayList<User> listOfUsers = new ArrayList<>();
 
         for(ConnectionHandler ch : connections) {
-            listOfUsernames.add(ch.nickname);
+            User user = new User(ch.nickname, ch.role);
+            listOfUsers.add(user);
         }
 
-        return listOfUsernames;
+        return listOfUsers;
     }
 
     private void updateUserList() {
-        ArrayList<String> listOfUsernames = getListOfUsernames();
+        ArrayList<User> listOfUsers = getListOfUsers();
 
         for (ConnectionHandler ch : connections) {
-            ch.sendUserList(listOfUsernames);
+            ch.sendUserList(listOfUsers);
         }
     }
     
@@ -101,11 +112,16 @@ public class Server implements Runnable{
         private ObjectInputStream in;
         private ObjectOutputStream out;
         private String nickname;
+        private final RoleType role;
         private boolean firstNicknameChange;
 
         public ConnectionHandler(Socket client) {
+            this(client, REGULAR);
+        }
+        public ConnectionHandler(Socket client, RoleType role) {
             this.client = client;
             this.nickname = "User";
+            this.role = role;
             this.firstNicknameChange = true;
         }
 
@@ -162,7 +178,7 @@ public class Server implements Runnable{
             }
         }
 
-        private void sendUserList(ArrayList<String> userList) {
+        private void sendUserList(ArrayList<User> userList) {
             try {
                 out.writeObject(MessageType.USERLIST_DATA);
                 out.writeObject(userList);
