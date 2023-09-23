@@ -14,6 +14,7 @@ public class Server implements Runnable{
     private ServerSocket serverSocket;
     private ExecutorService pool;
     private static Boolean running;
+    private static final int MESSAGE_CHAR_LIMIT = 5000;
 
     public Server(ServerSocket serverSocket) {
         connections = new ArrayList<>();
@@ -119,8 +120,8 @@ public class Server implements Runnable{
                 while(!client.isClosed()) {
                     type = (MessageType) in.readObject();
                     message = in.readUTF();
-                    if(message == null) {
-                        System.out.println("Client " + client.getRemoteSocketAddress() + " sent an empty message (type " + type + ").");
+                    if(!validateReceivedMessage(message, type)) {
+                        message = "";
                         continue;
                     }
                     switch (type) {
@@ -128,7 +129,7 @@ public class Server implements Runnable{
                         case CHAT -> broadcastMessage(nickname, message);
                         default -> {
                             System.out.println("Client " + client.getRemoteSocketAddress() + " attempted an invalid server request (message type " + type + ").");
-                            message = null;
+                            message = "";
                         }
                     }
                 }
@@ -137,6 +138,18 @@ public class Server implements Runnable{
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
+        }
+
+        private boolean validateReceivedMessage(String message, MessageType type) {
+            if(message == null || message.isBlank()) {
+                System.out.println("Client " + client.getRemoteSocketAddress() + " sent an empty message (type " + type + ").");
+                return false;
+            }
+            if(message.length() > MESSAGE_CHAR_LIMIT) {
+                System.out.println("Client " + client.getRemoteSocketAddress() + " sent a message exceeding the set character limit (" + MESSAGE_CHAR_LIMIT + ").");
+                return false;
+            }
+            return true;
         }
 
         private void sendMessage(String message) {

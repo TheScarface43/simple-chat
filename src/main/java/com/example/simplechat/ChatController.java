@@ -75,10 +75,18 @@ public class ChatController implements Initializable {
 
     private void sendMessage() {
         String messageToSend = textField_message.getText();
+
+        if(messageToSend.length() > 5000) {
+            receiveMessage("Messages cannot be longer than 5000 characters.");
+            return;
+        }
+
         textField_message.clear();
+
         if(messageToSend.isBlank()) {
             return;
         }
+
         client.sendMessage(messageToSend);
     }
 
