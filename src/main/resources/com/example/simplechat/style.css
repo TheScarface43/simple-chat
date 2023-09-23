@@ -1,0 +1,45 @@
+.root {
+    -fx-background-color: #555555;
+}
+
+.label-logo {
+    -fx-text-fill: #CCCCCC;
+}
+
+.text-field {
+    -fx-background-color: #333333;
+    -fx-text-fill: #CCCCCC;
+}
+
+.label-start {
+    -fx-text-fill: #CCCCCC;
+}
+
+.label-start-info {
+    -fx-text-fill: #86FC35;
+}
+
+.label-start-error {
+    -fx-text-fill: #FF6060;
+}
+
+.vBox-chat {
+    -fx-background-color: #333333;
+    fx-padding: 4 0 4 0;
+}
+
+.pane-chat {
+    -fx-background-color: transparent;
+}
+
+.text-chat {
+    -fx-padding: 1 5 1 5;
+}
+
+.text-chat > TextFlow > Text {
+    -fx-fill: #DDDDDD;
+}
+
+.userlist-entry-chat:hover {
+    -fx-background-color: #444444;
+}
