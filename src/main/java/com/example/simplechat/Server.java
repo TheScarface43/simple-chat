@@ -188,6 +188,16 @@ public class Server implements Runnable{
             }
         }
 
+        private void sendNameChange(String name) {
+            try {
+                out.writeObject(MessageType.NAME_CHANGE);
+                out.writeUTF(name);
+                out.flush();
+            } catch (IOException e) {
+                disconnect();
+            }
+        }
+
         private void processCommand(String message) {
             String[] command = message.split(" ");
             switch (command[0]) {
@@ -219,10 +229,6 @@ public class Server implements Runnable{
             if(len >= 3 && len <= 32) {
                 nickname = newNickname;
             }
-            if(firstNicknameChange) {
-                firstNicknameChange = false;
-                broadcastMessage(nickname + " has joined!");
-            }
 
             if(newNickname.length() < 3) {
                 sendMessage("Nicknames have to be at least 3 characters long.");
@@ -233,6 +239,14 @@ public class Server implements Runnable{
                 return;
             }
 
+            if(firstNicknameChange) {
+                firstNicknameChange = false;
+                broadcastMessage(nickname + " has joined!");
+            } else {
+                sendMessage("Nickname has been changed to " + nickname + ".");
+            }
+
+            sendNameChange(nickname);
             updateUserList();
         }
 

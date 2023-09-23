@@ -113,6 +113,10 @@ public class ChatController implements Initializable {
         }
     }
 
+    public void updateWindowTitle(String newTitle) {
+        Platform.runLater(() -> SimpleChat.stage.setTitle("Simple Chat - " + newTitle));
+    }
+
     private HBox createNewHBoxContainer(String contents) {
         HBox container = new HBox();
         Text text = new Text(contents);

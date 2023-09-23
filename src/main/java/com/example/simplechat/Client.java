@@ -44,6 +44,9 @@ public class Client implements Runnable {
                         ArrayList<User> listOfUsers = (ArrayList<User>) in.readObject();
                         chatController.updateUserList(listOfUsers);
                         break;
+                    case NAME_CHANGE:
+                        nickname = in.readUTF();
+                        chatController.updateWindowTitle(nickname);
                 }
             }
         } catch (IOException e) {
@@ -101,5 +104,9 @@ public class Client implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    public String getNickname() {
+        return nickname;
     }
 }

@@ -6,5 +6,6 @@ public enum MessageType {
     WARNING,
     COMMAND,
     USERLIST_DATA,
-    USERLIST_ELEMENT
+    USERLIST_ELEMENT,
+    NAME_CHANGE
 }
