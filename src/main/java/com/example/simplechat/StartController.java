@@ -140,7 +140,7 @@ public class StartController {
             socket.connect(socketAddress, 15000);
         } catch (IOException e) {
             e.printStackTrace();
-            displayMessage("Unable to connect to\n" + ip + ":" + port + ".", ERROR);
+            displayMessage("Unable to connect\nto " + ip + ":" + port + ".", ERROR);
             return null;
         }
 
@@ -160,7 +160,7 @@ public class StartController {
                 serverSocket = new ServerSocket(port, 50, addr);
             }
         } catch (IOException e) {
-            displayMessage("Unable to host at " + ip + ":" + port + ".\nMaybe try a different port?", ERROR);
+            displayMessage("Unable to host at " + ip + ":" + port + ".\nMaybe try a different port/IP?", ERROR);
             return null;
         }
 
