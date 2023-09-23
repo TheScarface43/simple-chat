@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="ap_main" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.simplechat.ChatController">
+<AnchorPane fx:id="ap_main" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="670.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.simplechat.ChatController">
    <padding>
       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
    </padding>
@@ -21,10 +21,11 @@
             <VBox fx:id="vBox_messages" prefHeight="334.0" prefWidth="425.0" styleClass="vBox-chat" />
          </content>
       </ScrollPane>
-      <ScrollPane fx:id="scrollPane_userList" focusTraversable="false" layoutX="465.0" layoutY="14.0" prefHeight="336.0" prefWidth="120.0" styleClass="pane-chat">
+      <ScrollPane fx:id="scrollPane_userList" fitToWidth="true" focusTraversable="false" layoutX="465.0" layoutY="14.0" prefHeight="336.0" prefWidth="190.0" styleClass="pane-chat">
          <content>
-            <VBox fx:id="vBox_userList" prefHeight="334.0" prefWidth="118.0" styleClass="vBox-chat" />
+            <VBox fx:id="vBox_userList" prefHeight="334.0" prefWidth="168.0" styleClass="vBox-chat" />
          </content>
       </ScrollPane>
+      <Button fx:id="button_clearChat" layoutX="587.0" layoutY="361.0" mnemonicParsing="false" onAction="#onClearButtonClick" text="Clear chat" />
    </children>
 </AnchorPane>

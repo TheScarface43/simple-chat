@@ -56,25 +56,37 @@ public class Client implements Runnable {
     public void sendMessage(String message) {
         try {
             if(message.startsWith("/")) {
-                out.writeObject(MessageType.COMMAND);
+                if(verifyCommand(message)) {    //Check if it's a command that needs to be handled by server, client or both
+                    out.writeObject(MessageType.COMMAND);
+                } else {
+                    return;
+                }
             } else {
                 out.writeObject(MessageType.CHAT);
             }
             out.writeUTF(message);
             out.flush();
-            switch(message) { //Special commands that should be executed locally, regardless of server's response
-                case "/quit":
-                case "/q":
-                    chatController.closeChatWindow();
-                    break;
-                case "/disconnect":
-                case "/dc":
-                    disconnect();
-                    break;
-            }
         } catch (IOException e) {
             disconnect();
         }
+    }
+
+    private boolean verifyCommand(String command) {
+        switch(command) {   //These are "local" commands to be executed by the client - do not bother server with those!
+            case "/quit":
+            case "/q":
+                chatController.closeChatWindow();
+                return false;
+            case "/disconnect":
+            case "/dc":
+                disconnect();
+                return false;
+            case "/clear":
+            case "/cls":
+                chatController.clearChatWindow();
+                return false;
+        }
+        return true;
     }
 
     public synchronized void disconnect() {

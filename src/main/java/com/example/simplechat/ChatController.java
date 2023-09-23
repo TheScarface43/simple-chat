@@ -71,6 +71,10 @@ public class ChatController implements Initializable {
     private void onMessageTextFieldAction() {
         sendMessage();
     }
+    @FXML
+    private void onClearButtonClick() {
+        clearChatWindow();
+    }
 
     private void sendMessage() {
         String messageToSend = textField_message.getText();
@@ -115,6 +119,10 @@ public class ChatController implements Initializable {
         TextFlow textFlow = new TextFlow(text);
         container.getChildren().add(textFlow);
         return container;
+    }
+
+    public void clearChatWindow() {
+        Platform.runLater(() -> vBox_messages.getChildren().clear());
     }
 
     public void disableChat() {
