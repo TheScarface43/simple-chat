@@ -1,5 +1,8 @@
 package com.example.simplechat;
 
+import java.net.ServerSocket;
+import java.net.Socket;
+
 public final class UserCredentials {
 
     private static UserCredentials INSTANCE;
@@ -7,6 +10,8 @@ public final class UserCredentials {
     private String ipAddress;
     private int port;
     private boolean host;
+    private Socket clientSocket;
+    private Server server;
 
     private UserCredentials() {}
 
@@ -32,6 +37,12 @@ public final class UserCredentials {
     void setHost(boolean host) {
         this.host = host;
     }
+    void setClientSocket(Socket socket) {
+        this.clientSocket = socket;
+    }
+    void setServer(Server server) {
+        this.server = server;
+    }
 
     String getNickname() {
         return nickname;
@@ -44,5 +55,11 @@ public final class UserCredentials {
     }
     boolean isHost() {
         return host;
+    }
+    Socket getClientSocket() {
+        return clientSocket;
+    }
+    Server getServer() {
+        return server;
     }
 }

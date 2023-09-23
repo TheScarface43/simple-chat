@@ -12,9 +12,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.WindowEvent;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -40,16 +38,10 @@ public class ChatController implements Initializable {
         String nickname = userCredentials.getNickname();
         String ip = userCredentials.getIpAddress();
         int port = userCredentials.getPort();
+        Socket socket = userCredentials.getClientSocket();
+        server = userCredentials.getServer();
 
-        if(userCredentials.isHost()) {
-            try {
-                startServer(ip, port);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        client = new Client(this, nickname, ip, port);
+        client = new Client(this, nickname, ip, port, socket);
         Thread clientThread = new Thread(client);
         clientThread.start();
 
@@ -63,19 +55,6 @@ public class ChatController implements Initializable {
             client.disconnect();
         }
     };
-
-    private void startServer(String ip, int port) throws IOException {
-        ServerSocket serverSocket;
-        if (ip.isBlank()) {
-            serverSocket = new ServerSocket(port);
-        } else {
-            InetAddress addr = InetAddress.getByName(ip);
-            serverSocket = new ServerSocket(port, 50, addr);
-        }
-        server = new Server(serverSocket);
-        Thread serverThread = new Thread(server);
-        serverThread.start();
-    }
 
     @FXML
     private void onSendButtonClick() {
