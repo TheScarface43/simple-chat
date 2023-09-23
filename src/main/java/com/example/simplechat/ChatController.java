@@ -1,10 +1,13 @@
 package com.example.simplechat;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
@@ -22,6 +25,8 @@ import static com.example.simplechat.SimpleChat.stage;
 public class ChatController implements Initializable {
     @FXML
     private VBox vBox_messages;
+    @FXML
+    private ScrollPane scrollPane_messages;
     @FXML
     private VBox vBox_userList;
     @FXML
@@ -46,6 +51,9 @@ public class ChatController implements Initializable {
         clientThread.start();
 
         SimpleChat.stage.setOnCloseRequest(shutdownEverything);
+
+        //chat auto-scrolling
+        vBox_messages.heightProperty().addListener((observableValue, oldValue, newValue) -> scrollPane_messages.setVvalue((Double) newValue));
     }
 
     private EventHandler<WindowEvent> shutdownEverything = event -> {
