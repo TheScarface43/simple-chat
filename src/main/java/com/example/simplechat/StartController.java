@@ -9,7 +9,11 @@ import java.io.IOException;
 import java.net.*;
 
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import org.apache.commons.validator.routines.InetAddressValidator;
+
+import static com.example.simplechat.StartMessageType.ERROR;
+import static com.example.simplechat.StartMessageType.INFO;
 
 public class StartController {
 
@@ -68,7 +72,7 @@ public class StartController {
         ip = textField_ipAddress.getText();
         String portString = textField_port.getText();
 
-        Color color = Color.RED;
+        StartMessageType type = ERROR;
 
         if(portString.isEmpty()) {
             port = 7063;
@@ -81,44 +85,53 @@ public class StartController {
         }
 
         if(nickname.length() > 32) {
-            displayMessage("Nicknames cannot be longer than\n32 characters.", color);
+            displayMessage("Nicknames cannot be longer than\n32 characters.", type);
             return false;
         }
         if(nickname.length() < 3) {
-            displayMessage("Nicknames have to be at least\n3 characters long.", color);
+            displayMessage("Nicknames have to be at least\n3 characters long.", type);
             return false;
         }
         if(nickname.contains(" ")) {
-            displayMessage("Nicknames cannot contain whitespace.", color);
+            displayMessage("Nicknames cannot contain whitespace.", type);
             return false;
         }
         if(!ip.isBlank() && !ip.equals("localhost")) {
             if(!InetAddressValidator.getInstance().isValidInet4Address(ip)) {
-                displayMessage("This is not a valid IPv4 address.", color);
+                displayMessage("This is not a valid IPv4 address.", type);
                 return false;
             }
         }
         if(port < 1024 || port > 65353) {
-            displayMessage("Please enter a valid port number\n(1024 - 65353).", color);
+            displayMessage("Please enter a valid port number\n(1024 - 65353).", type);
             return false;
         }
         if(!isHost && ip.isBlank()) {
-            displayMessage("Please specify an IP address.", color);
+            displayMessage("Please specify an IP address.", type);
             return false;
         }
         return true;
     }
 
-    private void displayMessage(String warningMessage, Color color) {
+    private void displayMessage(String warningMessage, StartMessageType type) {
+        String style;
+
+        switch(type) {
+            case INFO -> style = "label-start-info";
+            case ERROR -> style = "label-start-error";
+            default -> style = "label-start-error";
+        }
+
         Platform.runLater(() -> {
             label_warning.setText(warningMessage);
-            label_warning.setTextFill(color);
+            label_warning.getStyleClass().clear();
+            label_warning.getStyleClass().add(style);
             label_warning.setVisible(true);
         });
     }
 
     private Socket tryClient() {
-        displayMessage("Connecting...", Color.GREEN);
+        displayMessage("Connecting...", INFO);
 
         Socket socket = new Socket();
         SocketAddress socketAddress = new InetSocketAddress(ip, port);
@@ -127,7 +140,7 @@ public class StartController {
             socket.connect(socketAddress, 15000);
         } catch (IOException e) {
             e.printStackTrace();
-            displayMessage("Unable to connect to " + ip + ":" + port + ".", Color.RED);
+            displayMessage("Unable to connect to " + ip + ":" + port + ".", ERROR);
             return null;
         }
 
@@ -135,7 +148,7 @@ public class StartController {
     }
 
     private Server tryHost() {
-        displayMessage("Attempting to host...", Color.GREEN);
+        displayMessage("Attempting to host...", INFO);
         ServerSocket serverSocket;
 
         try {
@@ -147,7 +160,7 @@ public class StartController {
                 serverSocket = new ServerSocket(port, 50, addr);
             }
         } catch (IOException e) {
-            displayMessage("Unable to host at " + ip + ":" + port + ". Maybe try a different port?", Color.RED);
+            displayMessage("Unable to host at " + ip + ":" + port + ". Maybe try a different port?", ERROR);
             return null;
         }
 
@@ -177,7 +190,7 @@ public class StartController {
         try {
             SimpleChat.setRoot("chat-view");
         } catch (IOException e) {
-            displayMessage("Error - could not start the chat window. :/", Color.RED);
+            displayMessage("Error - could not start the chat window. :/", ERROR);
             try {
                 if(server != null) {
                     server.shutdown();

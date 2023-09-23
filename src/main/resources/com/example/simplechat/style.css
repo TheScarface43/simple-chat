@@ -15,6 +15,14 @@
     -fx-text-fill: #CCCCCC;
 }
 
+.label-start-info {
+    -fx-text-fill: #86FC35;
+}
+
+.label-start-error {
+    -fx-text-fill: #FF6060;
+}
+
 .vBox-chat {
     -fx-background-color: #333333;
 }
