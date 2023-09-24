@@ -40,6 +40,10 @@ public class Client implements Runnable {
                         String inMessage = in.readUTF();
                         chatController.receiveMessage(inMessage);
                         break;
+                    case SERVER:
+                        String serverMessage = in.readUTF();
+                        chatController.receiveMessage(serverMessage);
+                        break;
                     case USERLIST_DATA:
                         ArrayList<User> listOfUsers = (ArrayList<User>) in.readObject();
                         chatController.updateUserList(listOfUsers);

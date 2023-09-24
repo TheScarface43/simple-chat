@@ -3,13 +3,14 @@ package com.example.simplechat;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static com.example.simplechat.RoleType.HOST;
-import static com.example.simplechat.RoleType.REGULAR;
+import static com.example.simplechat.RoleType.*;
 
 public class Server implements Runnable{
 
@@ -60,6 +61,15 @@ public class Server implements Runnable{
         }
         for(ConnectionHandler ch : connections) {
             ch.sendMessage(message);
+        }
+    }
+
+    public void broadcastServerInfo(String info) {
+        if(info.isBlank()) {
+            return;
+        }
+        for(ConnectionHandler ch : connections) {
+            ch.sendServerInfo(info);
         }
     }
 
@@ -169,9 +179,21 @@ public class Server implements Runnable{
         }
 
         private void sendMessage(String message) {
+            String time = getTimestamp();
+            String messageWithTimestamp = time + " " + message;
             try {
                 out.writeObject(MessageType.CHAT);
-                out.writeUTF(message);
+                out.writeUTF(messageWithTimestamp);
+                out.flush();
+            } catch (IOException e) {
+                disconnect();
+            }
+        }
+
+        private void sendServerInfo(String info) {
+            try {
+                out.writeObject(MessageType.SERVER);
+                out.writeUTF(info);
                 out.flush();
             } catch (IOException e) {
                 disconnect();
@@ -198,6 +220,12 @@ public class Server implements Runnable{
             }
         }
 
+        private String getTimestamp() {
+            LocalTime time = LocalTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            return time.format(formatter);
+        }
+
         private void processCommand(String message) {
             String[] command = message.split(" ");
             switch (command[0]) {
@@ -207,18 +235,18 @@ public class Server implements Runnable{
                     }
                 }
                 case "/quit", "/q", "/disconnect", "/dc" -> disconnect();
-                default -> sendMessage("Invalid command.");
+                default -> sendServerInfo("Invalid command.");
             }
         }
 
         private boolean checkCommandArguments(String[] command, int arg) {
             int expected = arg + 1;
             if(command.length > expected) {
-                sendMessage("Too many arguments for this command. (expected - " + arg + ").");
+                sendServerInfo("Too many arguments for this command. (expected - " + arg + ").");
                 return false;
             }
             if(command.length < expected) {
-                sendMessage("Too few arguments for this command. (expected - " + arg + ").");
+                sendServerInfo("Too few arguments for this command. (expected - " + arg + ").");
                 return false;
             }
             return true;
@@ -231,19 +259,19 @@ public class Server implements Runnable{
             }
 
             if(newNickname.length() < 3) {
-                sendMessage("Nicknames have to be at least 3 characters long.");
+                sendServerInfo("Nicknames have to be at least 3 characters long.");
                 return;
             }
             if(newNickname.length() > 32) {
-                sendMessage("Nicknames cannot be longer than 32 characters.");
+                sendServerInfo("Nicknames cannot be longer than 32 characters.");
                 return;
             }
 
             if(firstNicknameChange) {
                 firstNicknameChange = false;
-                broadcastMessage(nickname + " has joined!");
+                broadcastServerInfo(nickname + " has joined!");
             } else {
-                sendMessage("Nickname has been changed to " + nickname + ".");
+                sendServerInfo("Nickname has been changed to " + nickname + ".");
             }
 
             sendNameChange(nickname);
@@ -259,7 +287,7 @@ public class Server implements Runnable{
                 }
                 connections.remove(this);
                 if(running) {
-                    broadcastMessage(nickname + " has left.");
+                    broadcastServerInfo(nickname + " has left.");
                     updateUserList();
                 }
             } catch (IOException e) {
