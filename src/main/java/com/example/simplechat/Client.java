@@ -36,13 +36,9 @@ public class Client implements Runnable {
             while(isRunning) {
                 type = (MessageType) in.readObject();
                 switch(type) {
-                    case CHAT:
+                    case CHAT, SERVER:
                         String inMessage = in.readUTF();
-                        chatController.receiveMessage(inMessage);
-                        break;
-                    case SERVER:
-                        String serverMessage = in.readUTF();
-                        chatController.receiveMessage(serverMessage);
+                        chatController.receiveMessage(inMessage, type);
                         break;
                     case USERLIST_DATA:
                         ArrayList<User> listOfUsers = (ArrayList<User>) in.readObject();

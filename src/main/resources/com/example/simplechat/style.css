@@ -40,6 +40,10 @@
     -fx-fill: #DDDDDD;
 }
 
+.server-chat > TextFlow > Text {
+    -fx-font-weight: bold;
+}
+
 .userlist-entry-chat:hover {
     -fx-background-color: #444444;
 }

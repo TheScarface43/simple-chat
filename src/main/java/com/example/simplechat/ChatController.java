@@ -18,6 +18,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import static com.example.simplechat.MessageType.SERVER;
 import static com.example.simplechat.RoleType.HOST;
 import static com.example.simplechat.SimpleChat.stage;
 
@@ -80,7 +81,7 @@ public class ChatController implements Initializable {
         String messageToSend = textField_message.getText();
 
         if(messageToSend.length() > 5000) {
-            receiveMessage("Messages cannot be longer than 5000 characters.");
+            receiveMessage("Messages cannot be longer than 5000 characters.", SERVER);
             return;
         }
 
@@ -93,10 +94,13 @@ public class ChatController implements Initializable {
         client.sendMessage(messageToSend);
     }
 
-    public void receiveMessage(String receivedMessage) {
+    public void receiveMessage(String receivedMessage, MessageType type) {
         HBox messageContainer = createNewHBoxContainer(receivedMessage);
         messageContainer.getStyleClass().add("text-chat");
         messageContainer.getStyleClass().add("message-chat");
+        if(type.equals(SERVER)) {
+            messageContainer.getStyleClass().add("server-chat");
+        }
         Platform.runLater(() -> vBox_messages.getChildren().add(messageContainer));
     }
 
@@ -130,7 +134,7 @@ public class ChatController implements Initializable {
     }
 
     public void disableChat() {
-        receiveMessage("Disconnected.");
+        receiveMessage("Disconnected.", SERVER);
         textField_message.setDisable(true);
         button_sendMessage.setDisable(true);
         if(server != null) {
