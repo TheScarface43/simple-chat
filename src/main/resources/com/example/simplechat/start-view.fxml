@@ -40,5 +40,6 @@
             <Font name="Forte" size="38.0" />
          </font>
       </Label>
+      <Label fx:id="label_version" layoutX="205.0" layoutY="48.0" styleClass="label-start" />
    </children>
 </AnchorPane>
