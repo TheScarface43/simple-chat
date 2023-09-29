@@ -20,11 +20,13 @@ public class Server implements Runnable{
     private static Boolean running;
     private static Boolean firstConnection = true;
     private static final int MESSAGE_CHAR_LIMIT = 5000;
+    private final User serverUser;
 
     public Server(ServerSocket serverSocket) {
         connections = new ArrayList<>();
         this.serverSocket = serverSocket;
         running = true;
+        this.serverUser = new User("SERVER", RoleType.SERVER);
     }
 
     @Override
@@ -52,25 +54,14 @@ public class Server implements Runnable{
         }
     }
 
-    public void broadcastMessage(String nickname, String message) {
-        broadcastMessage(nickname + ": " + message);
-    }
-    public void broadcastMessage(String message) {
-        if(message.isBlank()) {
-            return;
-        }
+    public void broadcastMessage(Message message) {
         for(ConnectionHandler ch : connections) {
             ch.sendMessage(message);
         }
     }
-
-    public void broadcastServerInfo(String info) {
-        if(info.isBlank()) {
-            return;
-        }
-        for(ConnectionHandler ch : connections) {
-            ch.sendServerInfo(info);
-        }
+    public void broadcastMessage(String string) {
+        Message message = new TextMessage(serverUser, MessageType.SERVER, string);
+        broadcastMessage(message);
     }
 
     public void disconnectEveryone() {
@@ -141,21 +132,21 @@ public class Server implements Runnable{
                 out = new ObjectOutputStream(client.getOutputStream());
                 in = new ObjectInputStream(client.getInputStream());
 
-                String message;
+                Message message;
                 MessageType type;
                 while(!client.isClosed()) {
                     type = (MessageType) in.readObject();
-                    message = in.readUTF();
+                    message = (Message) in.readObject();
                     if(!validateReceivedMessage(message, type)) {
-                        message = "";
+                        message = null;
                         continue;
                     }
                     switch (type) {
-                        case COMMAND -> processCommand(message);
-                        case CHAT -> broadcastMessage(nickname, message);
+                        case COMMAND -> processCommand((TextMessage) message);
+                        case CHAT -> broadcastMessage(message);
                         default -> {
                             System.out.println("Client " + client.getRemoteSocketAddress() + " attempted an invalid server request (message type " + type + ").");
-                            message = "";
+                            message = null;
                         }
                     }
                 }
@@ -166,68 +157,56 @@ public class Server implements Runnable{
             }
         }
 
-        private boolean validateReceivedMessage(String message, MessageType type) {
-            if(message == null || message.isBlank()) {
-                System.out.println("Client " + client.getRemoteSocketAddress() + " sent an empty message (type " + type + ").");
+        private boolean validateReceivedMessage(Message message, MessageType type) {
+            if(message.getType() != type) {
+                System.out.println("Client " + client.getRemoteSocketAddress() + " sent the wrong type of message (implied - " + type + ", actual - " + message.getType() + ")!");
                 return false;
             }
-            if(message.length() > MESSAGE_CHAR_LIMIT) {
-                System.out.println("Client " + client.getRemoteSocketAddress() + " sent a message exceeding the set character limit (" + MESSAGE_CHAR_LIMIT + ").");
+            if(message == null || message.isEmpty()) {
+                System.out.println("Client " + client.getRemoteSocketAddress() + " sent an empty message (type " + message.getType() + ").");
                 return false;
+            }
+            if(message instanceof TextMessage) {
+                if(((TextMessage) message).getContents().length() > MESSAGE_CHAR_LIMIT) {
+                    System.out.println("Client " + client.getRemoteSocketAddress() + " sent a message exceeding the set character limit (" + MESSAGE_CHAR_LIMIT + ").");
+                    return false;
+                }
             }
             return true;
         }
 
-        private void sendMessage(String message) {
-            String time = getTimestamp();
-            String messageWithTimestamp = time + " " + message;
+        private void sendMessage(Message message) {
             try {
-                out.writeObject(MessageType.CHAT);
-                out.writeUTF(messageWithTimestamp);
+                out.writeObject(message.getType());
+                out.writeObject(message);
                 out.flush();
             } catch (IOException e) {
                 disconnect();
             }
         }
-
-        private void sendServerInfo(String info) {
-            try {
-                out.writeObject(MessageType.SERVER);
-                out.writeUTF(info);
-                out.flush();
-            } catch (IOException e) {
-                disconnect();
-            }
+        private void sendMessage(String string) {
+            Message message = new TextMessage(serverUser, MessageType.SERVER, string);
+            sendMessage(message);
         }
 
         private void sendUserList(ArrayList<User> userList) {
-            try {
-                out.writeObject(MessageType.USERLIST_DATA);
-                out.writeObject(userList);
-                out.flush();
-            } catch (IOException e) {
-                disconnect();
-            }
+            Message message = new UserListMessage(serverUser, userList);
+            sendMessage(message);
         }
 
         private void sendNameChange(String name) {
-            try {
-                out.writeObject(MessageType.NAME_CHANGE);
-                out.writeUTF(name);
-                out.flush();
-            } catch (IOException e) {
-                disconnect();
-            }
+            Message message = new TextMessage(serverUser, MessageType.NAME_CHANGE, name);
+            sendMessage(message);
         }
 
-        private String getTimestamp() {
-            LocalTime time = LocalTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-            return time.format(formatter);
+        private void sendAssignUser(User user) {
+            Message message = new AssignMessage(serverUser, user);
+            sendMessage(message);
         }
 
-        private void processCommand(String message) {
-            String[] command = message.split(" ");
+        private void processCommand(TextMessage message) {
+            String contents = message.getContents();
+            String[] command = contents.split(" ");
             switch (command[0]) {
                 case "/name" -> {
                     if (checkCommandArguments(command, 1)) {
@@ -235,18 +214,18 @@ public class Server implements Runnable{
                     }
                 }
                 case "/quit", "/q", "/disconnect", "/dc" -> disconnect();
-                default -> sendServerInfo("Invalid command.");
+                default -> sendMessage("Invalid command.");
             }
         }
 
         private boolean checkCommandArguments(String[] command, int arg) {
             int expected = arg + 1;
             if(command.length > expected) {
-                sendServerInfo("Too many arguments for this command. (expected - " + arg + ").");
+                sendMessage("Too many arguments for this command. (expected - " + arg + ").");
                 return false;
             }
             if(command.length < expected) {
-                sendServerInfo("Too few arguments for this command. (expected - " + arg + ").");
+                sendMessage("Too few arguments for this command. (expected - " + arg + ").");
                 return false;
             }
             return true;
@@ -259,22 +238,23 @@ public class Server implements Runnable{
             }
 
             if(newNickname.length() < 3) {
-                sendServerInfo("Nicknames have to be at least 3 characters long.");
+                sendMessage("Nicknames have to be at least 3 characters long.");
                 return;
             }
             if(newNickname.length() > 32) {
-                sendServerInfo("Nicknames cannot be longer than 32 characters.");
+                sendMessage("Nicknames cannot be longer than 32 characters.");
                 return;
             }
 
             if(firstNicknameChange) {
                 firstNicknameChange = false;
-                broadcastServerInfo(nickname + " has joined!");
+                broadcastMessage(nickname + " has joined!");
             } else {
-                sendServerInfo("Nickname has been changed to " + nickname + ".");
+                sendMessage("Nickname has been changed to " + nickname + ".");
             }
 
             sendNameChange(nickname);
+            sendAssignUser(new User(nickname, this.role));
             updateUserList();
         }
 
@@ -287,7 +267,7 @@ public class Server implements Runnable{
                 }
                 connections.remove(this);
                 if(running) {
-                    broadcastServerInfo(nickname + " has left.");
+                    broadcastMessage(nickname + " has left.");
                     updateUserList();
                 }
             } catch (IOException e) {

@@ -16,6 +16,11 @@ public class UserListMessage extends Message {
     }
 
     @Override
+    public boolean isEmpty() {
+        return contents.isEmpty();
+    }
+
+    @Override
     public String toString() {
         return timestamp.toString() + " " + contents.toString();
     }

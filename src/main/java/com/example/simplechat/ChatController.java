@@ -15,6 +15,7 @@ import javafx.stage.WindowEvent;
 
 import java.net.Socket;
 import java.net.URL;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -94,13 +95,8 @@ public class ChatController implements Initializable {
         client.sendMessage(messageToSend);
     }
 
-    public void receiveMessage(String receivedMessage, MessageType type) {
-        HBox messageContainer = createNewHBoxContainer(receivedMessage);
-        messageContainer.getStyleClass().add("text-chat");
-        messageContainer.getStyleClass().add("message-chat");
-        if(type.equals(SERVER)) {
-            messageContainer.getStyleClass().add("server-chat");
-        }
+    public void receiveMessage(TextMessage message) {
+        HBox messageContainer = createNewHBoxContainer(message);
         Platform.runLater(() -> vBox_messages.getChildren().add(messageContainer));
     }
 
@@ -121,11 +117,40 @@ public class ChatController implements Initializable {
         Platform.runLater(() -> SimpleChat.stage.setTitle("Simple Chat - " + newTitle));
     }
 
-    private HBox createNewHBoxContainer(String contents) {
+    private HBox createNewHBoxContainer(TextMessage message) {
         HBox container = new HBox();
-        Text text = new Text(contents);
-        TextFlow textFlow = new TextFlow(text);
+        TextFlow textFlow = new TextFlow();
+
+        if(message.getType() == MessageType.CHAT) {
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+            String timestampString = message.getTimestamp().format(dtf);
+            String authorString = message.getAuthor().nickname();
+
+            Text timestampText = new Text(timestampString);
+            Text authorText = new Text(authorString);
+
+            timestampText.getStyleClass().add("time-chat");
+            authorText.getStyleClass().add("author-chat");
+
+            textFlow.getChildren().add(timestampText);
+            textFlow.getChildren().add(authorText);
+        }
+
+        String contentsString = message.getContents();
+        Text contentsText = new Text(contentsString);
+        contentsText.getStyleClass().add("content-chat");
+        textFlow.getChildren().add(contentsText);
+
+        container.getStyleClass().add("text-chat");
+        container.getStyleClass().add("message-chat");
+
         container.getChildren().add(textFlow);
+
+        if(message.getType() == MessageType.SERVER) {
+            container.getStyleClass().add("server-chat");
+        }
+
         return container;
     }
 

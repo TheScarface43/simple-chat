@@ -14,6 +14,10 @@ public abstract class Message implements Serializable {
         this.type = type;
     }
 
+    public boolean isEmpty() {
+        return true;
+    }
+
     public LocalTime getTimestamp() {
         return timestamp;
     }

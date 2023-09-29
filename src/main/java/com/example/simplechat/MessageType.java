@@ -7,5 +7,6 @@ public enum MessageType {
     COMMAND,
     USERLIST_DATA,
     USERLIST_ELEMENT,
-    NAME_CHANGE
+    NAME_CHANGE,
+    ASSIGN_USER
 }

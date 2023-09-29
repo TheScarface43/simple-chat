@@ -14,6 +14,11 @@ public class TextMessage extends Message {
     }
 
     @Override
+    public boolean isEmpty() {
+        return contents.isBlank();
+    }
+
+    @Override
     public String toString() {
         return timestamp.toString() + " " + author.nickname() + ": " + contents;
     }

@@ -14,6 +14,7 @@ public class Client implements Runnable {
     private String nickname;
     private String ip;
     private int port;
+    private User user;
 
     public Client(ChatController chatController, String nickname, String ip, int port, Socket socket) {
         this.chatController = chatController;
@@ -21,6 +22,7 @@ public class Client implements Runnable {
         this.ip = ip;
         this.port = port;
         this.client = socket;
+        this.user = new User(nickname, RoleType.REGULAR);
     }
 
     @Override
@@ -33,20 +35,22 @@ public class Client implements Runnable {
             sendMessage("/name " + nickname);
 
             MessageType type;
+            Message inMessage;
             while(isRunning) {
                 type = (MessageType) in.readObject();
+                inMessage = (Message) in.readObject();
                 switch(type) {
                     case CHAT, SERVER:
-                        String inMessage = in.readUTF();
-                        chatController.receiveMessage(inMessage, type);
+                        chatController.receiveMessage((TextMessage) inMessage);
                         break;
                     case USERLIST_DATA:
-                        ArrayList<User> listOfUsers = (ArrayList<User>) in.readObject();
-                        chatController.updateUserList(listOfUsers);
+                        chatController.updateUserList((UserListMessage) inMessage);
                         break;
                     case NAME_CHANGE:
-                        nickname = in.readUTF();
+                        nickname = ((TextMessage) inMessage).getContents();
                         chatController.updateWindowTitle(nickname);
+                    case ASSIGN_USER:
+                        assignUser((AssignMessage) inMessage);
                 }
             }
         } catch (IOException e) {
@@ -56,22 +60,40 @@ public class Client implements Runnable {
         }
     }
 
-    public void sendMessage(String message) {
-        try {
-            if(message.startsWith("/")) {
-                if(verifyCommand(message)) {    //Check if it's a command that needs to be handled by server, client or both
-                    out.writeObject(MessageType.COMMAND);
-                } else {
-                    return;
-                }
-            } else {
-                out.writeObject(MessageType.CHAT);
+    public void sendMessage(TextMessage message) {
+        if(message.isEmpty()) {
+            return;
+        }
+
+        if (message.getType() == MessageType.COMMAND) {
+            if(!verifyCommand(message.getContents())) {  //Check if it's a command that needs to be handled by server
+                return;                                  //If not - don't send anything
             }
-            out.writeUTF(message);
+        }
+
+        try {
+            out.writeObject(message.getType());
+            out.writeObject(message);
             out.flush();
         } catch (IOException e) {
             disconnect();
         }
+    }
+    public void sendMessage(String string) {
+        if(string.isBlank()) {
+            return;
+        }
+
+        MessageType type;
+
+        if(string.startsWith("/")) {
+            type = MessageType.COMMAND;
+        } else {
+            type = MessageType.CHAT;
+        }
+
+        TextMessage message = new TextMessage(user, type, string);
+        sendMessage(message);
     }
 
     private boolean verifyCommand(String command) {
@@ -92,6 +114,10 @@ public class Client implements Runnable {
         return true;
     }
 
+    private void assignUser(AssignMessage message) {
+        user = message.getContents();
+    }
+
     public synchronized void disconnect() {
         if(isRunning) {
             chatController.disableChat();
@@ -104,9 +130,5 @@ public class Client implements Runnable {
                 e.printStackTrace();
             }
         }
-    }
-
-    public String getNickname() {
-        return nickname;
     }
 }
