@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import static com.example.simplechat.MessageType.SERVER;
-import static com.example.simplechat.RoleType.HOST;
+import static com.example.simplechat.RoleType.*;
 import static com.example.simplechat.SimpleChat.stage;
 
 public class ChatController implements Initializable {
@@ -37,6 +37,7 @@ public class ChatController implements Initializable {
 
     private Server server;
     private Client client;
+    private User localUser;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -50,6 +51,8 @@ public class ChatController implements Initializable {
         client = new Client(this, nickname, ip, port, socket);
         Thread clientThread = new Thread(client);
         clientThread.start();
+
+        localUser = new User("LOCAL", LOCAL);
 
         SimpleChat.stage.setOnCloseRequest(shutdownEverything);
 
@@ -82,7 +85,7 @@ public class ChatController implements Initializable {
         String messageToSend = textField_message.getText();
 
         if(messageToSend.length() > 5000) {
-            receiveMessage("Messages cannot be longer than 5000 characters.", SERVER);
+            receiveMessage("Messages cannot be longer than 5000 characters.");
             return;
         }
 
@@ -99,8 +102,18 @@ public class ChatController implements Initializable {
         HBox messageContainer = createNewHBoxContainer(message);
         Platform.runLater(() -> vBox_messages.getChildren().add(messageContainer));
     }
+    public void receiveMessage(String string) {
+        TextMessage message = new TextMessage(localUser, MessageType.LOCAL, string);
+        receiveMessage(message);
+    }
 
-    public void updateUserList(ArrayList<User> listOfUsers) {
+    public void updateUserList(UserListMessage userListMessage) {
+        if(userListMessage.author.role() != RoleType.SERVER) {
+            return;
+        }
+
+        ArrayList<User> listOfUsers = userListMessage.getContents();
+
         Platform.runLater(() -> vBox_userList.getChildren().clear());
         for (User user : listOfUsers) {
             HBox usernameContainer = createNewHBoxContainer(user.nickname());
@@ -124,8 +137,8 @@ public class ChatController implements Initializable {
         if(message.getType() == MessageType.CHAT) {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-            String timestampString = message.getTimestamp().format(dtf);
-            String authorString = message.getAuthor().nickname();
+            String timestampString = message.getTimestamp().format(dtf) + " ";
+            String authorString = message.getAuthor().nickname() + ": ";
 
             Text timestampText = new Text(timestampString);
             Text authorText = new Text(authorString);
@@ -150,6 +163,16 @@ public class ChatController implements Initializable {
         if(message.getType() == MessageType.SERVER) {
             container.getStyleClass().add("server-chat");
         }
+        if(message.getType() == MessageType.LOCAL) {
+            container.getStyleClass().add("local-chat");
+        }
+
+        return container;
+    }
+    private HBox createNewHBoxContainer(String string) {
+        Text text = new Text(string);
+        TextFlow textFlow = new TextFlow(text);
+        HBox container = new HBox(textFlow);
 
         return container;
     }
@@ -159,7 +182,7 @@ public class ChatController implements Initializable {
     }
 
     public void disableChat() {
-        receiveMessage("Disconnected.", SERVER);
+        receiveMessage("Disconnected.");
         textField_message.setDisable(true);
         button_sendMessage.setDisable(true);
         if(server != null) {

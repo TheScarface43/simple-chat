@@ -49,8 +49,10 @@ public class Client implements Runnable {
                     case NAME_CHANGE:
                         nickname = ((TextMessage) inMessage).getContents();
                         chatController.updateWindowTitle(nickname);
+                        break;
                     case ASSIGN_USER:
                         assignUser((AssignMessage) inMessage);
+                        break;
                 }
             }
         } catch (IOException e) {

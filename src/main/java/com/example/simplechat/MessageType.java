@@ -4,6 +4,7 @@ public enum MessageType {
     SERVER,
     CHAT,
     WARNING,
+    LOCAL,
     COMMAND,
     USERLIST_DATA,
     USERLIST_ELEMENT,
