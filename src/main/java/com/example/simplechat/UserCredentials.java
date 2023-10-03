@@ -1,6 +1,5 @@
 package com.example.simplechat;
 
-import java.net.ServerSocket;
 import java.net.Socket;
 
 public final class UserCredentials {

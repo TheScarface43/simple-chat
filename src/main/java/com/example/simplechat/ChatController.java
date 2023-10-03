@@ -19,7 +19,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import static com.example.simplechat.MessageType.SERVER;
 import static com.example.simplechat.RoleType.*;
 import static com.example.simplechat.SimpleChat.stage;
 

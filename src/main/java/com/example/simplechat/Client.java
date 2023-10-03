@@ -2,7 +2,6 @@ package com.example.simplechat;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class Client implements Runnable {
     
