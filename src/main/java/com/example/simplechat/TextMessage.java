@@ -20,6 +20,6 @@ public class TextMessage extends Message {
 
     @Override
     public String toString() {
-        return timestamp.toString() + " " + author.nickname() + ": " + contents;
+        return timestamp.toString() + " " + author.getNickname() + ": " + contents;
     }
 }

@@ -1,5 +1,7 @@
 package com.example.simplechat;
 
+import javafx.scene.paint.Color;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -15,13 +17,13 @@ public class Client implements Runnable {
     private int port;
     private User user;
 
-    public Client(ChatController chatController, String nickname, String ip, int port, Socket socket) {
+    public Client(ChatController chatController, String nickname, String ip, int port, Socket socket, String color) {
         this.chatController = chatController;
         this.nickname = nickname;
         this.ip = ip;
         this.port = port;
         this.client = socket;
-        this.user = new User(nickname, RoleType.REGULAR);
+        this.user = new User(nickname, RoleType.REGULAR, color);
     }
 
     @Override

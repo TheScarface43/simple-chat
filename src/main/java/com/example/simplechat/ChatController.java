@@ -46,12 +46,13 @@ public class ChatController implements Initializable {
         int port = userCredentials.getPort();
         Socket socket = userCredentials.getClientSocket();
         server = userCredentials.getServer();
+        String color = userCredentials.getColor();
 
-        client = new Client(this, nickname, ip, port, socket);
+        client = new Client(this, nickname, ip, port, socket, color);
         Thread clientThread = new Thread(client);
         clientThread.start();
 
-        localUser = new User("LOCAL", LOCAL);
+        localUser = new User("LOCAL", LOCAL, "#DDDDDD");
 
         SimpleChat.stage.setOnCloseRequest(shutdownEverything);
 
@@ -107,7 +108,7 @@ public class ChatController implements Initializable {
     }
 
     public void updateUserList(UserListMessage userListMessage) {
-        if(userListMessage.author.role() != RoleType.SERVER) {
+        if(userListMessage.author.getRole() != RoleType.SERVER) {
             return;
         }
 
@@ -115,10 +116,10 @@ public class ChatController implements Initializable {
 
         Platform.runLater(() -> vBox_userList.getChildren().clear());
         for (User user : listOfUsers) {
-            HBox usernameContainer = createNewHBoxContainer(user.nickname());
+            HBox usernameContainer = createNewHBoxContainer(user.getNickname());
             usernameContainer.getStyleClass().add("text-chat");
             usernameContainer.getStyleClass().add("userlist-entry-chat");
-            if(user.role().equals(HOST)) {
+            if(user.getRole().equals(HOST)) {
                 usernameContainer.getStyleClass().add("userlist-entry-chat-host");
             }
             Platform.runLater(() -> vBox_userList.getChildren().add(usernameContainer));
@@ -137,13 +138,16 @@ public class ChatController implements Initializable {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
 
             String timestampString = message.getTimestamp().format(dtf) + " ";
-            String authorString = message.getAuthor().nickname() + ": ";
+            String authorString = message.getAuthor().getNickname() + ": ";
 
             Text timestampText = new Text(timestampString);
             Text authorText = new Text(authorString);
 
             timestampText.getStyleClass().add("time-chat");
             authorText.getStyleClass().add("author-chat");
+
+            authorText.setStyle("-fx-fill: " + message.getAuthor().getColor());
+            System.out.println("-fx-fill: " + message.getAuthor().getColor());
 
             textFlow.getChildren().add(timestampText);
             textFlow.getChildren().add(authorText);

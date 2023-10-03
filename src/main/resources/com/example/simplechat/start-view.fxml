@@ -4,11 +4,12 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="270.0" prefWidth="270.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.simplechat.StartController">
+<AnchorPane prefHeight="310.0" prefWidth="270.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.simplechat.StartController">
    <children>
-      <Pane layoutX="15.0" layoutY="73.0" prefHeight="185.0" prefWidth="240.0" style="-fx-border-width: 2; -fx-border-style: solid; -fx-border-radius: 10; -fx-border-color: grey;">
+      <Pane layoutX="15.0" layoutY="73.0" prefHeight="220.0" prefWidth="240.0" style="-fx-border-width: 2; -fx-border-style: solid; -fx-border-radius: 10; -fx-border-color: grey;">
          <children>
             <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="12.0" layoutY="53.0" styleClass="label-start" text="Nickname:" />
             <TextField fx:id="textField_nickname" layoutX="77.0" layoutY="49.0" onAction="#onHostButtonClick" prefHeight="25.0" prefWidth="149.0">
@@ -28,8 +29,13 @@
                   <String fx:value="text-field" />
                   <String fx:value="text-field-start" />
                </styleClass></TextField>
-            <Button fx:id="button_join" layoutX="191.0" layoutY="146.0" mnemonicParsing="false" onAction="#onJoinButtonClick" text="Join" />
-            <Button fx:id="button_host" layoutX="19.0" layoutY="146.0" mnemonicParsing="false" onAction="#onHostButtonClick" text="Host" />
+            <Button fx:id="button_join" layoutX="188.0" layoutY="181.0" mnemonicParsing="false" onAction="#onJoinButtonClick" text="Join" />
+            <Button fx:id="button_host" layoutX="15.0" layoutY="181.0" mnemonicParsing="false" onAction="#onHostButtonClick" text="Host" />
+            <Label layoutX="36.0" layoutY="150.0" styleClass="label-start" text="Color:" textAlignment="RIGHT" />
+            <ColorPicker fx:id="colorPicker_start" layoutX="77.0" layoutY="146.0" prefHeight="25.0" prefWidth="37.0" styleClass="color-picker">
+               <value>
+                  <Color red="0.8666666746139526" green="0.8666666746139526" blue="0.8666666746139526" />
+               </value></ColorPicker>
             <Label fx:id="label_warning" alignment="CENTER" contentDisplay="CENTER" layoutX="1.0" layoutY="6.0" prefHeight="34.0" prefWidth="238.0" text="Warning" textAlignment="CENTER" textFill="RED" visible="false" wrapText="true" />
          </children>
          <padding>

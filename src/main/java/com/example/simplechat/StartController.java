@@ -3,6 +3,7 @@ package com.example.simplechat;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
@@ -27,6 +28,8 @@ public class StartController implements Initializable {
     private Label label_warning;
     @FXML
     private Label label_version;
+    @FXML
+    private ColorPicker colorPicker_start;
     private String nickname;
     private String ip;
     private int port;
@@ -193,6 +196,7 @@ public class StartController implements Initializable {
         if (server != null) {
             userCredentials.setServer(server);
         }
+        userCredentials.setColor(colorPicker_start.getValue());
 
         try {
             SimpleChat.setRoot("chat-view");

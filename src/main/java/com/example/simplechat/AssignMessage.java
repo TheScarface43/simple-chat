@@ -14,6 +14,6 @@ public class AssignMessage extends Message {
 
     @Override
     public String toString() {
-        return timestamp + " User object [" + contents.nickname() + ", " + contents.role() + "]";
+        return timestamp + " User object [" + contents.getNickname() + ", " + contents.getRole() + "]";
     }
 }

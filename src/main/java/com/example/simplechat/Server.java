@@ -1,5 +1,7 @@
 package com.example.simplechat;
 
+import javafx.scene.paint.Color;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -24,7 +26,7 @@ public class Server implements Runnable{
         connections = new ArrayList<>();
         this.serverSocket = serverSocket;
         running = true;
-        this.serverUser = new User("SERVER", RoleType.SERVER);
+        this.serverUser = new User("SERVER", RoleType.SERVER, "#DDDDDD");
     }
 
     @Override
@@ -90,8 +92,7 @@ public class Server implements Runnable{
         ArrayList<User> listOfUsers = new ArrayList<>();
 
         for(ConnectionHandler ch : connections) {
-            User user = new User(ch.nickname, ch.role);
-            listOfUsers.add(user);
+            listOfUsers.add(ch.user);
         }
 
         return listOfUsers;
@@ -110,8 +111,7 @@ public class Server implements Runnable{
         private Socket client;
         private ObjectInputStream in;
         private ObjectOutputStream out;
-        private String nickname;
-        private final RoleType role;
+        private User user;
         private boolean firstNicknameChange;
 
         public ConnectionHandler(Socket client) {
@@ -119,8 +119,7 @@ public class Server implements Runnable{
         }
         public ConnectionHandler(Socket client, RoleType role) {
             this.client = client;
-            this.nickname = "User";
-            this.role = role;
+            this.user = new User("User", role, "#DDDDDD");
             this.firstNicknameChange = true;
         }
 
@@ -232,7 +231,7 @@ public class Server implements Runnable{
         private void changeNickname(String newNickname) {
             int len = newNickname.length();
             if(len >= 3 && len <= 32) {
-                nickname = newNickname;
+                user.setNickname(newNickname);
             }
 
             if(newNickname.length() < 3) {
@@ -246,13 +245,13 @@ public class Server implements Runnable{
 
             if(firstNicknameChange) {
                 firstNicknameChange = false;
-                broadcastMessage(nickname + " has joined!");
+                broadcastMessage(newNickname + " has joined!");
             } else {
-                sendMessage("Nickname has been changed to " + nickname + ".");
+                sendMessage("Nickname has been changed to " + newNickname + ".");
             }
 
-            sendNameChange(nickname);
-            sendAssignUser(new User(nickname, this.role));
+            sendNameChange(newNickname);
+            sendAssignUser(user);
             updateUserList();
         }
 
@@ -265,7 +264,7 @@ public class Server implements Runnable{
                 }
                 connections.remove(this);
                 if(running) {
-                    broadcastMessage(nickname + " has left.");
+                    broadcastMessage(user.getNickname() + " has left.");
                     updateUserList();
                 }
             } catch (IOException e) {
