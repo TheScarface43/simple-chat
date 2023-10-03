@@ -31,6 +31,9 @@ public class User implements Serializable {
         return color;
     }
     public void setColor(String color) {
+        if(!color.startsWith("#")) {
+            color = "#" + color;
+        }
         this.color = color;
     }
 }

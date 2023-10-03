@@ -116,7 +116,7 @@ public class ChatController implements Initializable {
 
         Platform.runLater(() -> vBox_userList.getChildren().clear());
         for (User user : listOfUsers) {
-            HBox usernameContainer = createNewHBoxContainer(user.getNickname());
+            HBox usernameContainer = createNewHBoxContainer(user);
             usernameContainer.getStyleClass().add("text-chat");
             usernameContainer.getStyleClass().add("userlist-entry-chat");
             if(user.getRole().equals(HOST)) {
@@ -147,7 +147,6 @@ public class ChatController implements Initializable {
             authorText.getStyleClass().add("author-chat");
 
             authorText.setStyle("-fx-fill: " + message.getAuthor().getColor());
-            System.out.println("-fx-fill: " + message.getAuthor().getColor());
 
             textFlow.getChildren().add(timestampText);
             textFlow.getChildren().add(authorText);
@@ -156,6 +155,7 @@ public class ChatController implements Initializable {
         String contentsString = message.getContents();
         Text contentsText = new Text(contentsString);
         contentsText.getStyleClass().add("content-chat");
+        contentsText.setStyle("-fx-fill: " + message.getAuthor().getColor());
         textFlow.getChildren().add(contentsText);
 
         container.getStyleClass().add("text-chat");
@@ -172,8 +172,9 @@ public class ChatController implements Initializable {
 
         return container;
     }
-    private HBox createNewHBoxContainer(String string) {
-        Text text = new Text(string);
+    private HBox createNewHBoxContainer(User user) {
+        Text text = new Text(user.getNickname());
+        text.setStyle("-fx-fill: " + user.getColor());
         TextFlow textFlow = new TextFlow(text);
         HBox container = new HBox(textFlow);
 

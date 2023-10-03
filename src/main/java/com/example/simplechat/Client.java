@@ -5,6 +5,8 @@ import javafx.scene.paint.Color;
 import java.io.*;
 import java.net.Socket;
 
+import static com.example.simplechat.MessageType.HELLO;
+
 public class Client implements Runnable {
     
     private Socket client;
@@ -12,14 +14,13 @@ public class Client implements Runnable {
     private ObjectOutputStream out;
     private boolean isRunning;
     private ChatController chatController;
-    private String nickname;
     private String ip;
     private int port;
     private User user;
 
     public Client(ChatController chatController, String nickname, String ip, int port, Socket socket, String color) {
         this.chatController = chatController;
-        this.nickname = nickname;
+        //this.nickname = nickname;
         this.ip = ip;
         this.port = port;
         this.client = socket;
@@ -33,7 +34,7 @@ public class Client implements Runnable {
             in = new ObjectInputStream(client.getInputStream());
             isRunning = true;
 
-            sendMessage("/name " + nickname);
+            sendMessage();
 
             MessageType type;
             Message inMessage;
@@ -47,12 +48,9 @@ public class Client implements Runnable {
                     case USERLIST_DATA:
                         chatController.updateUserList((UserListMessage) inMessage);
                         break;
-                    case NAME_CHANGE:
-                        nickname = ((TextMessage) inMessage).getContents();
-                        chatController.updateWindowTitle(nickname);
-                        break;
                     case ASSIGN_USER:
                         assignUser((AssignMessage) inMessage);
+                        chatController.updateWindowTitle(user.getNickname());
                         break;
                 }
             }
@@ -96,6 +94,10 @@ public class Client implements Runnable {
         }
 
         TextMessage message = new TextMessage(user, type, string);
+        sendMessage(message);
+    }
+    public void sendMessage() {
+        TextMessage message = new TextMessage(user, HELLO, "Hello!");
         sendMessage(message);
     }
 

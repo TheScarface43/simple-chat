@@ -42,7 +42,7 @@ public final class UserCredentials {
         this.server = server;
     }
     void setColor(Color color) {
-        this.color = color.toString();
+        this.color = "#" + color.toString().substring(2, 8);
     }
     void setColor(String color) {
         this.color = color;

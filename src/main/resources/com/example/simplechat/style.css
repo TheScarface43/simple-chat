@@ -40,6 +40,10 @@
     -fx-fill: #DDDDDD;
 }
 
+.author-chat {
+    -fx-font-weight: bold;
+}
+
 .server-chat > TextFlow > Text {
     -fx-font-weight: bold;
 }

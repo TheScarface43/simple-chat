@@ -92,7 +92,8 @@ public class Server implements Runnable{
         ArrayList<User> listOfUsers = new ArrayList<>();
 
         for(ConnectionHandler ch : connections) {
-            listOfUsers.add(ch.user);
+            User user = ch.user;
+            listOfUsers.add(new User(user.getNickname(), user.getRole(), user.getColor()));
         }
 
         return listOfUsers;
@@ -112,7 +113,6 @@ public class Server implements Runnable{
         private ObjectInputStream in;
         private ObjectOutputStream out;
         private User user;
-        private boolean firstNicknameChange;
 
         public ConnectionHandler(Socket client) {
             this(client, REGULAR);
@@ -120,7 +120,6 @@ public class Server implements Runnable{
         public ConnectionHandler(Socket client, RoleType role) {
             this.client = client;
             this.user = new User("User", role, "#DDDDDD");
-            this.firstNicknameChange = true;
         }
 
         @Override
@@ -141,6 +140,7 @@ public class Server implements Runnable{
                     switch (type) {
                         case COMMAND -> processCommand((TextMessage) message);
                         case CHAT -> broadcastMessage(message);
+                        case HELLO -> welcome((TextMessage) message);
                         default -> {
                             System.out.println("Client " + client.getRemoteSocketAddress() + " attempted an invalid server request (message type " + type + ").");
                             message = null;
@@ -191,11 +191,6 @@ public class Server implements Runnable{
             sendMessage(message);
         }
 
-        private void sendNameChange(String name) {
-            Message message = new TextMessage(serverUser, MessageType.NAME_CHANGE, name);
-            sendMessage(message);
-        }
-
         private void sendAssignUser(User user) {
             Message message = new AssignMessage(serverUser, user);
             sendMessage(message);
@@ -205,9 +200,14 @@ public class Server implements Runnable{
             String contents = message.getContents();
             String[] command = contents.split(" ");
             switch (command[0]) {
-                case "/name" -> {
+                case "/name", "/n" -> {
                     if (checkCommandArguments(command, 1)) {
                         changeNickname(command[1]);
+                    }
+                }
+                case "/color", "/c" -> {
+                    if (checkCommandArguments(command, 1)) {
+                        changeColor(command[1]);
                     }
                 }
                 case "/quit", "/q", "/disconnect", "/dc" -> disconnect();
@@ -228,30 +228,70 @@ public class Server implements Runnable{
             return true;
         }
 
-        private void changeNickname(String newNickname) {
-            int len = newNickname.length();
-            if(len >= 3 && len <= 32) {
-                user.setNickname(newNickname);
-            }
+        private void welcome(TextMessage message) {
+            String nickname = message.getAuthor().getNickname();
+            String color = message.getAuthor().getColor();
 
-            if(newNickname.length() < 3) {
+            if(!validateNickname(nickname)) {
+                return;
+            }
+            this.user.setNickname(nickname);
+
+            if(!validateColor(color)) {
+                return;
+            }
+            this.user.setColor(color);
+
+            sendAssignUser(this.user);
+            broadcastMessage(this.user.getNickname() + " has joined!");
+            updateUserList();
+        }
+
+        private boolean validateNickname(String nickname) {
+            int len = nickname.length();
+
+            if(nickname.length() < 3) {
                 sendMessage("Nicknames have to be at least 3 characters long.");
-                return;
+                return false;
             }
-            if(newNickname.length() > 32) {
+            if(nickname.length() > 32) {
                 sendMessage("Nicknames cannot be longer than 32 characters.");
+                return false;
+            }
+            return true;
+        }
+
+        private boolean validateColor(String color) {
+            try {
+                Color webColor = Color.web(color);
+            } catch (IllegalArgumentException e) {
+                sendMessage("Invalid color - please use the hex color codes, eg. #FF2222.");
+                return false;
+            }
+            return true;
+        }
+
+        private void changeNickname(String newNickname) {
+            if(!validateNickname(newNickname)) {
                 return;
             }
 
-            if(firstNicknameChange) {
-                firstNicknameChange = false;
-                broadcastMessage(newNickname + " has joined!");
-            } else {
-                sendMessage("Nickname has been changed to " + newNickname + ".");
+            user.setNickname(newNickname);
+            sendMessage("Nickname has been changed to " + newNickname + ".");
+
+            sendAssignUser(new User(user.getNickname(), user.getRole(), user.getColor()));
+            updateUserList();
+        }
+
+        private void changeColor(String newColor) {
+            if(!validateColor(newColor)) {
+                return;
             }
 
-            sendNameChange(newNickname);
-            sendAssignUser(user);
+            user.setColor(newColor);
+            sendMessage("Color has been changed to " + newColor + ".");
+
+            sendAssignUser(new User(user.getNickname(), user.getRole(), user.getColor()));
             updateUserList();
         }
 

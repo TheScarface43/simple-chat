@@ -5,7 +5,7 @@ public enum MessageType {
     CHAT,
     LOCAL,
     COMMAND,
+    HELLO,
     USERLIST_DATA,
-    NAME_CHANGE,
     ASSIGN_USER
 }
