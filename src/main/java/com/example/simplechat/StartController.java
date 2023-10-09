@@ -2,20 +2,21 @@ package com.example.simplechat;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.ResourceBundle;
 
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import org.apache.commons.validator.routines.InetAddressValidator;
 
 import static com.example.simplechat.StartMessageType.ERROR;
 import static com.example.simplechat.StartMessageType.INFO;
 
-public class StartController {
+public class StartController implements Initializable {
 
     @FXML
     private TextField textField_nickname;
@@ -25,10 +26,19 @@ public class StartController {
     private TextField textField_port;
     @FXML
     private Label label_warning;
+    @FXML
+    private Label label_version;
+    @FXML
+    private ColorPicker colorPicker_start;
     private String nickname;
     private String ip;
     private int port;
     private boolean isTryingToConnect = false;
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        label_version.setText("v" + SimpleChat.VERSION);
+    }
 
     @FXML
     private void onHostButtonClick() {
@@ -186,6 +196,7 @@ public class StartController {
         if (server != null) {
             userCredentials.setServer(server);
         }
+        userCredentials.setColor(colorPicker_start.getValue());
 
         try {
             SimpleChat.setRoot("chat-view");

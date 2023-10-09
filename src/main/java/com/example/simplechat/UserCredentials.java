@@ -1,6 +1,7 @@
 package com.example.simplechat;
 
-import java.net.ServerSocket;
+import javafx.scene.paint.Color;
+
 import java.net.Socket;
 
 public final class UserCredentials {
@@ -9,9 +10,9 @@ public final class UserCredentials {
     private String nickname;
     private String ipAddress;
     private int port;
-    private boolean host;
     private Socket clientSocket;
     private Server server;
+    private String color;
 
     private UserCredentials() {}
 
@@ -34,14 +35,17 @@ public final class UserCredentials {
     void setPort(int port) {
         this.port = port;
     }
-    void setHost(boolean host) {
-        this.host = host;
-    }
     void setClientSocket(Socket socket) {
         this.clientSocket = socket;
     }
     void setServer(Server server) {
         this.server = server;
+    }
+    void setColor(Color color) {
+        this.color = "#" + color.toString().substring(2, 8);
+    }
+    void setColor(String color) {
+        this.color = color;
     }
 
     String getNickname() {
@@ -53,13 +57,13 @@ public final class UserCredentials {
     int getPort() {
         return port;
     }
-    boolean isHost() {
-        return host;
-    }
     Socket getClientSocket() {
         return clientSocket;
     }
     Server getServer() {
         return server;
+    }
+    String getColor() {
+        return color;
     }
 }

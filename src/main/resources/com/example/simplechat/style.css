@@ -25,7 +25,7 @@
 
 .vBox-chat {
     -fx-background-color: #333333;
-    fx-padding: 4 0 4 0;
+    -fx-padding: 0 0 4 0;
 }
 
 .pane-chat {
@@ -40,6 +40,23 @@
     -fx-fill: #DDDDDD;
 }
 
+.author-chat {
+    -fx-font-weight: bold;
+}
+
+.server-chat > TextFlow > Text {
+    -fx-font-weight: bold;
+}
+
+.local-chat > TextFlow > Text {
+    -fx-font-weight: bold;
+}
+
 .userlist-entry-chat:hover {
     -fx-background-color: #444444;
+}
+
+.userlist-entry-chat-host > TextFlow > Text {
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
 }
